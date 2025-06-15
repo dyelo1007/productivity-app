@@ -4,7 +4,7 @@ import TodoList from "./components/TodoList";
 
 const App = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center font-sans text-gray-800">
+    <div className="min-h-screen flex flex-col items-center font-sans text-gray-800 dark:bg-[#121212] dark:text-gray-100">
       <Header />
       <main className="w-[90%] max-w-6xl mx-auto flex flex-col gap-10 mt-32">
         <TodoList />
