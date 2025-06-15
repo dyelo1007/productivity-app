@@ -1,6 +1,6 @@
-export interface Todo {
-  id: string;
-  title: string;
-  completed: boolean;
-}
-///last
+export type Todo = {
+  id: number;
+  text: string;
+  status: "todo" | "done";
+  isEditing: boolean;
+};
