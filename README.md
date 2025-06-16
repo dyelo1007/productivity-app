@@ -1,60 +1,90 @@
-# React + TypeScript + Vite
+# 🧠 Productivity App — React + Tailwind
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple Productivity App built using React, TailwindCSS, and DnD Kit. The app helps users manage their tasks using a **Todo List** with drag-and-drop functionality and includes a **Pomodoro Timer** for focused work sessions. All todos are persisted in localStorage.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+- ✅ **Todo List**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+  - Add, edit, delete tasks
+  - Mark tasks as done or not done
+  - Drag-and-drop tasks between _To Do_ and _Done_ columns
+  - Tasks are saved in localStorage to persist data across sessions
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+- ⏱ **Pomodoro Timer**
+
+  - Select Pomodoro, Short Break, or Long Break modes
+  - Start, Pause, and Reset timer functionality
+  - Clean and simple UI inspired by modern productivity apps
+
+- 🎨 **Modern UI**
+  - Fully responsive design
+  - Built with TailwindCSS for fast, consistent styling
+  - Light and dark mode friendly design foundation
+
+---
+
+## 🛠 Tech Stack
+
+- **React** (Functional Components, Hooks)
+- **TypeScript**
+- **TailwindCSS**
+- **DnD Kit** (for drag-and-drop functionality)
+- **LocalStorage API** (for data persistence)
+
+---
+
+## 📦 Installation
+
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/your-username/productivity-app.git
+cd productivity-app
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. **Install Dependencies:**
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    "react-x": reactX,
-    "react-dom": reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs["recommended-typescript"].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
+```bash
+npm install
+# or
+yarn install
 ```
 
-=======
+3. **Run the app:**
 
-# productivity-app
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-A full productivity suite built with React, TypeScript, TailwindCSS, Framer Motion, and Context API. Features Todo List with drag &amp; drop, Pomodoro Timer, and global dark mode toggle.
+💡 **What I Learned**
+
+- Building React apps with reusable components
+
+- Managing state using useState and useEffect
+
+- Persisting data using browser localStorage
+
+- Implementing drag-and-drop with DnD Kit
+
+- Structuring and planning a feature-based React project
+
+- Working with TailwindCSS for responsive and clean UI
+
+- Debugging and problem-solving logical issues
+
+## 📄 License
+
+This project is open-source and available under the MIT License.
+
+## 🔗 Acknowledgements
+
+- Inspired by various Todo and Productivity Apps UI/UX designs.
+- Thanks to the open-source community for libraries and tools such as:
+  - React
+  - Tailwind CSS
+  - DnD Kit
