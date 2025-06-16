@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ChangeEvent } from "react";
 import type { Todo } from "@/types/todo";
 import { DndContext, closestCenter } from "@dnd-kit/core";
@@ -7,9 +7,25 @@ import DroppableColumn from "./DropableColumn";
 import { DraggableTodo } from "./DraggableTodo";
 
 const TodoList = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const stored = localStorage.getItem("todos");
+    return stored ? JSON.parse(stored) : [];
+  });
   const [newTodo, setNewTodo] = useState("");
   const [showModal, setShowModal] = useState(false);
+
+  //load from local storage
+
+  useEffect(() => {
+    const storedTodos = localStorage.getItem("todos");
+    if (storedTodos) {
+      setTodos(JSON.parse(storedTodos));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   const addTodo = () => {
     if (!newTodo.trim()) return;
