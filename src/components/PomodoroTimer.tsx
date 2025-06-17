@@ -44,7 +44,7 @@ const PomodoroTimer = () => {
   };
 
   return (
-    <section className="bg-white border border-gray-200 rounded-2xl p-10 shadow-sm flex flex-col items-center justify-center dark:bg-[#1e1e1e]">
+    <section className="w-full mx-auto p-4 sm:p-6 md:p-10 2xl:px-20 bg-white border border-gray-200 rounded-2xl shadow-sm flex flex-col items-center justify-center dark:bg-[#1e1e1e]">
       <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">
         Pomodoro Timer
       </h2>
