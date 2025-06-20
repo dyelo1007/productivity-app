@@ -96,23 +96,23 @@ const TodoList = () => {
   };
 
   return (
-    <div className="w-full max-w-full 2xl:w-screen px-4 md:px-8 2xl:px-20">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+    <div className="w-full max-w-full 2xl:w-screen  ">
+      <div className=" grid grid-cols-1 md:grid-cols-2 gap-10">
         <DndContext
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
           {/* To Do Column */}
           <DroppableColumn id="todo">
-            <div className="w-full bg-white border border-gray-200 rounded-2xl p-6 shadow-sm dark:bg-[#1e1e1e]">
-              <div className="flex justify-between">
+            <div className="w-full bg-white border  border-gray-200 rounded-2xl p-6 shadow-sm dark:bg-[#1e1e1e]">
+              <div className="flex justify-between ">
                 <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
                   To Do
                 </h2>
                 <div className="mb-4 col-span-2">
                   {showModal ? (
                     <div className="fixed inset-0 bg-white/50 backdrop-blur-sm flex justify-center items-center z-50">
-                      <div className="bg-white border border-gray-200 rounded-2xl shadow-xl w-full max-w-md p-8 relative dark:bg-[#1e1e1e]">
+                      <div className="bg-white border border-gray-200 rounded-2xl shadow-xl w-full max-w-md p-8 relative dark:bg-[#1e1e1e] ">
                         <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800 dark:text-gray-50">
                           Add New Task
                         </h2>
