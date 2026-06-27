@@ -2,7 +2,7 @@ import { useDraggable } from "@dnd-kit/core";
 import React from "react";
 
 type Props = {
-  id: number;
+  id: string;
   children: React.ReactNode;
 };
 

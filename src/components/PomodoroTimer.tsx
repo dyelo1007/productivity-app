@@ -1,114 +1,173 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useCallback } from "react";
+import { toast } from "sonner";
+import { useTimer } from "@/hooks/useTimer";
+import { playBeep } from "@/lib/audio";
+import { requestNotificationPermission, showTimerNotification } from "@/lib/notification";
+import TimerModeSelector from "./TimerModeSelector";
+import TimerSettingsModal from "./TimerSettingsModal";
+import ConfirmSwitchModal from "./ConfirmSwitchModal";
+import type { TimerMode, PomodoroPhase } from "@/types/timer";
 
 const PomodoroTimer = () => {
-  const MODES = {
-    pomodoro: 25 * 60,
-    short_break: 5 * 60,
-    long_break: 15 * 60,
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    return localStorage.getItem("timerSound") !== "off";
+  });
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingSwitch, setPendingSwitch] = useState<TimerMode | null>(null);
+  const [pendingPhase, setPendingPhase] = useState<PomodoroPhase | null>(null);
+
+  const handleComplete = useCallback(() => {
+    if (soundEnabled) playBeep();
+    showTimerNotification(pomodoroPhaseRef.current);
+    toast.success("Time's up!");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [soundEnabled]);
+
+  const {
+    timerMode,
+    pomodoroPhase,
+    timeLeft,
+    isRunning,
+    settings,
+    customDuration,
+    pomodoroPhaseRef,
+    switchTimerMode,
+    switchPomodoroPhase,
+    setCustomTime,
+    updateSettings,
+    start,
+    pause,
+    reset,
+    formatTime,
+  } = useTimer(handleComplete);
+
+  const handleStart = () => {
+    requestNotificationPermission();
+    start();
+    toast.info("Timer resumed");
   };
 
-  const [mode, setMode] = useState<keyof typeof MODES>("pomodoro");
-  const [timeLeft, setTimeLeft] = useState(MODES["pomodoro"]);
-  const [isRunning, setIsRunning] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const handlePause = () => {
+    pause();
+    toast.info("Timer paused");
+  };
 
-  // Start timer effect
-  useEffect(() => {
-    if (isRunning) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current!);
-            setIsRunning(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+  const handleReset = () => {
+    reset();
+    toast.warning("Timer reset");
+  };
+
+  const toggleSound = () => {
+    setSoundEnabled((prev) => {
+      const next = !prev;
+      localStorage.setItem("timerSound", next ? "on" : "off");
+      return next;
+    });
+  };
+
+  const handlePendingModeSwitch = useCallback((mode: TimerMode) => {
+    setPendingSwitch(mode);
+    setPendingPhase(null);
+    setConfirmOpen(true);
+  }, []);
+
+  const handlePendingPhaseSwitch = useCallback((phase: PomodoroPhase) => {
+    setPendingPhase(phase);
+    setPendingSwitch(null);
+    setConfirmOpen(true);
+  }, []);
+
+  const handleConfirmSwitch = useCallback(() => {
+    if (pendingSwitch) {
+      switchTimerMode(pendingSwitch);
+      toast.info("Timer switched");
+    } else if (pendingPhase) {
+      switchPomodoroPhase(pendingPhase);
+      toast.info("Timer switched");
     }
+    setConfirmOpen(false);
+    setPendingSwitch(null);
+    setPendingPhase(null);
+  }, [pendingSwitch, pendingPhase, switchTimerMode, switchPomodoroPhase]);
 
-    return () => clearInterval(timerRef.current!);
-  }, [isRunning]);
-
-  // Handle mode switching
-  const handleModeChange = (newMode: keyof typeof MODES) => {
-    setMode(newMode);
-    setTimeLeft(MODES[newMode]);
-    setIsRunning(false);
-  };
-
-  const formatTime = (seconds: number) => {
-    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
-    const s = String(seconds % 60).padStart(2, "0");
-    return `${m}:${s}`;
+  const getPhaseLabel = () => {
+    if (timerMode === "stopwatch") return "Stopwatch";
+    if (timerMode === "custom") return "Custom Timer";
+    switch (pomodoroPhase) {
+      case "focus": return "Focus";
+      case "short_break": return "Short Break";
+      case "long_break": return "Long Break";
+    }
   };
 
   return (
-    <section className="w-full mx-auto p-4 sm:p-6 md:p-10 2xl:px-20 bg-white border border-gray-200 rounded-2xl shadow-sm flex flex-col items-center justify-center dark:bg-[#1e1e1e]">
+    <section className="w-full mx-auto p-4 sm:p-6 md:p-10 2xl:px-20 bg-white border border-gray-200 rounded-2xl shadow-sm flex flex-col items-center justify-center dark:bg-card dark:border-border">
       <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">
-        Pomodoro Timer
+        Timer
       </h2>
 
-      {/* Mode Selector */}
-      <div className="flex gap-4 mb-8">
-        <button
-          className={`px-4 py-2 rounded-full shadow font-medium ${
-            mode === "pomodoro"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-800"
-          }`}
-          onClick={() => handleModeChange("pomodoro")}
-        >
-          Pomodoro
-        </button>
-        <button
-          className={`px-4 py-2 rounded-full shadow font-medium ${
-            mode === "short_break"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-800"
-          }`}
-          onClick={() => handleModeChange("short_break")}
-        >
-          Short Break
-        </button>
-        <button
-          className={`px-4 py-2 rounded-full shadow font-medium ${
-            mode === "long_break"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-800"
-          }`}
-          onClick={() => handleModeChange("long_break")}
-        >
-          Long Break
-        </button>
+      <TimerModeSelector
+        timerMode={timerMode}
+        pomodoroPhase={pomodoroPhase}
+        customDuration={customDuration}
+        isRunning={isRunning}
+        onTimerModeChange={switchTimerMode}
+        onPomodoroPhaseChange={switchPomodoroPhase}
+        onCustomDurationChange={setCustomTime}
+        onPendingModeSwitch={handlePendingModeSwitch}
+        onPendingPhaseSwitch={handlePendingPhaseSwitch}
+      />
+
+      {/* Phase Label + Controls Row */}
+      <div className="flex items-center justify-between w-full mt-6 mb-4">
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          {getPhaseLabel()}
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleSound}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
+            title={soundEnabled ? "Mute sound" : "Enable sound"}
+          >
+            {soundEnabled ? "🔊" : "🔇"}
+          </button>
+          <TimerSettingsModal settings={settings} onSave={updateSettings} />
+        </div>
       </div>
 
       {/* Timer Display */}
-      <div className="text-6xl font-bold mb-8 text-gray-800 dark:text-white">
+      <div className="text-6xl font-bold mb-8 text-gray-800 dark:text-white tabular-nums">
         {formatTime(timeLeft)}
       </div>
 
       {/* Timer Controls */}
-      <div className="flex gap-6">
+      <div className="flex gap-4">
         <button
-          className="px-8 py-3 bg-green-500 text-white rounded-full shadow hover:bg-green-600 transition font-medium"
-          onClick={() => setIsRunning(true)}
+          className="px-8 py-3 bg-green-500 text-white rounded-full shadow hover:bg-green-600 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={handleStart}
+          disabled={isRunning}
         >
-          Start
+          {isRunning ? "Running..." : "Start"}
         </button>
         <button
           className="px-8 py-3 bg-yellow-500 text-white rounded-full shadow hover:bg-yellow-600 transition font-medium"
-          onClick={() => setIsRunning(false)}
+          onClick={handlePause}
         >
           Pause
         </button>
         <button
           className="px-8 py-3 bg-red-500 text-white rounded-full shadow hover:bg-red-600 transition font-medium"
-          onClick={() => handleModeChange(mode)}
+          onClick={handleReset}
         >
           Reset
         </button>
       </div>
+
+      <ConfirmSwitchModal
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        onConfirm={handleConfirmSwitch}
+      />
     </section>
   );
 };

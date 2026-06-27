@@ -5,44 +5,37 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import type { DragEndEvent } from "@dnd-kit/core";
 import DroppableColumn from "./DropableColumn";
 import { DraggableTodo } from "./DraggableTodo";
+import AddEditModal from "./AddEditModal";
 
-const TodoList = () => {
-  const [todos, setTodos] = useState<Todo[]>(() => {
+const loadTodos = (): Todo[] => {
+  try {
     const stored = localStorage.getItem("todos");
     return stored ? JSON.parse(stored) : [];
-  });
-  const [newTodo, setNewTodo] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  } catch {
+    localStorage.removeItem("todos");
+    return [];
+  }
+};
 
-  useEffect(() => {
-    const storedTodos = localStorage.getItem("todos");
-    if (storedTodos) {
-      setTodos(JSON.parse(storedTodos));
-    }
-  }, []);
+const TodoList = () => {
+  const [todos, setTodos] = useState<Todo[]>(loadTodos);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
-  const addTodo = () => {
-    if (!newTodo.trim()) return;
-
+  const addTodo = (text: string) => {
     const newItem: Todo = {
-      id: Date.now(),
-      text: newTodo.trim(),
+      id: crypto.randomUUID(),
+      text,
       status: "todo",
       isEditing: false,
     };
-    setShowModal(false);
     setTodos([...todos, newItem]);
-    setNewTodo("");
   };
 
-  const openModel = () => setShowModal(true);
-  const closeModal = () => setShowModal(false);
-
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     setTodos(
       todos.map((todo) =>
         todo.id === id ? { ...todo, isEditing: true } : todo
@@ -50,11 +43,11 @@ const TodoList = () => {
     );
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
-  const handleSave = (id: number, newText: string) => {
+  const handleSave = (id: string, newText: string) => {
     setTodos(
       todos.map((todo) =>
         todo.id === id ? { ...todo, text: newText, isEditing: false } : todo
@@ -62,14 +55,14 @@ const TodoList = () => {
     );
   };
 
-  const handleInputChange = (id: number, e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (id: string, e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setTodos(
       todos.map((todo) => (todo.id === id ? { ...todo, text: value } : todo))
     );
   };
 
-  const toggleStatus = (id: number) => {
+  const toggleStatus = (id: string) => {
     setTodos((prev) =>
       prev.map((todo) =>
         todo.id === id
@@ -83,7 +76,7 @@ const TodoList = () => {
     const { active, over } = event;
     if (!over) return;
 
-    const activeId = Number(active.id);
+    const activeId = String(active.id);
     const destination = over.id;
 
     setTodos((prev) =>
@@ -104,59 +97,18 @@ const TodoList = () => {
         >
           {/* To Do Column */}
           <DroppableColumn id="todo">
-            <div className="w-full bg-white border  border-gray-200 rounded-2xl p-6 shadow-sm dark:bg-[#1e1e1e]">
+            <div className="w-full bg-white border  border-gray-200 rounded-2xl p-6 shadow-sm dark:bg-card">
               <div className="flex justify-between ">
                 <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
                   To Do
                 </h2>
                 <div className="mb-4 col-span-2">
-                  {showModal ? (
-                    <div className="fixed inset-0 bg-white/50 backdrop-blur-sm flex justify-center items-center z-50">
-                      <div className="bg-white border border-gray-200 rounded-2xl shadow-xl w-full max-w-md p-8 relative dark:bg-[#1e1e1e] ">
-                        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800 dark:text-gray-50">
-                          Add New Task
-                        </h2>
-                        <div className="mb-4">
-                          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-50">
-                            Task Title
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="Add a new ToDo"
-                            className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            onChange={(e) => setNewTodo(e.target.value)}
-                          />
-                        </div>
-                        <div className="flex justify-end space-x-3 mt-6">
-                          <button
-                            onClick={closeModal}
-                            className="px-5 py-2 rounded-xl bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={addTodo}
-                            className="px-5 py-2 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
-                          >
-                            Save
-                          </button>
-                        </div>
-                        <button
-                          onClick={closeModal}
-                          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl leading-none"
-                        >
-                          &times;
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={openModel}
-                      className="px-3 py-1 bg-blue-600 text-white rounded"
-                    >
-                      Add todos
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setShowModal(true)}
+                    className="px-3 py-1 bg-blue-600 text-white rounded"
+                  >
+                    Add todos
+                  </button>
                 </div>
               </div>
               <ul className="space-y-3">
@@ -164,7 +116,7 @@ const TodoList = () => {
                   .filter((todo) => todo.status === "todo")
                   .map((todo) => (
                     <DraggableTodo key={todo.id} id={todo.id}>
-                      <li className="p-4 bg-gray-50 rounded-xl border flex justify-between dark:bg-[#2a2a2a]">
+                      <li className="p-4 bg-gray-50 rounded-xl border flex justify-between dark:bg-muted">
                         {todo.isEditing ? (
                           <>
                             <input
@@ -215,7 +167,7 @@ const TodoList = () => {
           </DroppableColumn>
 
           {/* Done Column */}
-          <div className="w-full bg-white border border-gray-200 rounded-2xl p-6 shadow-sm dark:bg-[#1e1e1e]">
+          <div className="w-full bg-white border border-gray-200 rounded-2xl p-6 shadow-sm dark:bg-card">
             <DroppableColumn id="done">
               <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
                 Done
@@ -225,7 +177,7 @@ const TodoList = () => {
                   .filter((todo) => todo.status === "done")
                   .map((todo) => (
                     <DraggableTodo key={todo.id} id={todo.id}>
-                      <li className="p-4 bg-gray-50 rounded-xl border flex justify-between dark:bg-[#2a2a2a]">
+                      <li className="p-4 bg-gray-50 rounded-xl border flex justify-between dark:bg-muted">
                         <span className="line-through text-gray-400">
                           {todo.text}
                         </span>
@@ -249,6 +201,14 @@ const TodoList = () => {
           </div>
         </DndContext>
       </div>
+      <AddEditModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSave={(text) => {
+          addTodo(text);
+          setShowModal(false);
+        }}
+      />
     </div>
   );
 };

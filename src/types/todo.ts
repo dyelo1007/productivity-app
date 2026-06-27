@@ -1,5 +1,5 @@
 export type Todo = {
-  id: number;
+  id: string;
   text: string;
   status: "todo" | "done";
   isEditing: boolean;
