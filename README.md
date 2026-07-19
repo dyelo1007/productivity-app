@@ -4,9 +4,9 @@ A simple Productivity App built using React, TailwindCSS, and DnD Kit. The app h
 
 ---
 
-## 🚀 Features
+## Features
 
-- ✅ **Todo List**
+-  **Todo List**
 
   - Add, edit, delete tasks
   - Mark tasks as done or not done
@@ -19,14 +19,14 @@ A simple Productivity App built using React, TailwindCSS, and DnD Kit. The app h
   - Start, Pause, and Reset timer functionality
   - Clean and simple UI inspired by modern productivity apps
 
-- 🎨 **Modern UI**
+-  **Modern UI**
   - Fully responsive design
   - Built with TailwindCSS for fast, consistent styling
   - Light and dark mode friendly design foundation
 
 ---
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 - **React** (Functional Components, Hooks)
 - **TypeScript**
@@ -36,7 +36,7 @@ A simple Productivity App built using React, TailwindCSS, and DnD Kit. The app h
 
 ---
 
-## 📦 Installation
+##  Installation
 
 1. **Clone the repository:**
 
@@ -61,7 +61,7 @@ npm run dev
 yarn dev
 ```
 
-💡 **What I Learned**
+ **What I Learned**
 
 - Building React apps with reusable components
 
@@ -81,7 +81,7 @@ yarn dev
 
 This project is open-source and available under the MIT License.
 
-## 🔗 Acknowledgements
+##  Acknowledgements
 
 - Inspired by various Todo and Productivity Apps UI/UX designs.
 - Thanks to the open-source community for libraries and tools such as:
