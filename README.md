@@ -1,4 +1,4 @@
-# 🧠 Productivity App — React + Tailwind
+# Productivity App — React + Tailwind
 
 A simple Productivity App built using React, TailwindCSS, and DnD Kit. The app helps users manage their tasks using a **Todo List** with drag-and-drop functionality and includes a **Pomodoro Timer** for focused work sessions. All todos are persisted in localStorage.
 
